@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>可可盖项目部今日餐品排名</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 15px;
+            padding-bottom: 80px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+        
+        .time-reminder {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .time-reminder h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .time-reminder h3 i {
+            font-size: 1.3rem;
+        }
+        
+        .time-reminder p {
+            color: #856404;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        .highlight {
+            background-color: #ffecb5;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .dishes-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        @media (min-width: 768px) {
+            .dishes-container {
+                flex-direction: row;
+            }
+        }
+        
+        .dish-column {
+            flex: 1;
+        }
+        
+        .dish-column h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .meat h2 {
+            background: linear-gradient(to right, #d9534f, #c9302c);
+        }
+        
+        .vegetable h2 {
+            background: linear-gradient(to right, #5cb85c, #449d44);
+        }
+        
+        .dish-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        
+        .dish-item {
+            background-color: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+        
+        .dish-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .dish-image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .dish-info {
+            padding: 15px;
+            position: relative;
+        }
+        
+        .dish-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .vote-count {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background-color: #f8f9fa;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #555;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .vote-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+        
+        .vote-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .vote-btn.voted {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .vote-btn.voted:hover {
+            background-color: #3d8b40;
+        }
+        
+        .current-top {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #ffc107;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .vote-summary {
+            background-color: #e9f7fe;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid #17a2b8;
+        }
+        
+        .vote-summary h3 {
+            color: #0c5460;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .top-dishes {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .top-dish {
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        .top-dish .dish-type {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .top-dish .dish-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        .top-dish .vote-count {
+            position: static;
+            display: inline-block;
+            background-color: #f8f9fa;
+            margin-top: 8px;
+            box-shadow: none;
+        }
+        
+        .user-votes {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #555;
+        }
+        
+        @media (max-width: 767px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .dish-image {
+                height: 140px;
+            }
+            
+            .time-reminder p {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>可可盖项目部今日餐品排名</h1>
+        <div class="subtitle">每人仅限一票，投票后点击可取消</div>
+    </header>
+    
+    <div class="time-reminder">
+        <h3><i class="fas fa-clock"></i> 重要提醒：系统清算时间</h3>
+        <p>• 上午 <span class="highlight">8:00</span> 系统清算：厨房按照当前排名第一的 <span class="highlight">荤菜</span> 准备午餐</p>
+        <p>• 下午 <span class="highlight">16:00</span> 系统清算：厨房按照当前排名第一的 <span class="highlight">素菜</span> 准备晚餐</p>
+        <p>请在清算时间前完成投票，确保您喜欢的菜品能够胜出！</p>
+    </div>
+    
+    <div class="dishes-container">
+        <div class="dish-column meat">
+            <h2><i class="fas fa-drumstick-bite"></i> 荤菜区 (7种)</h2>
+            <div class="dish-list" id="meat-dishes">
+                <!-- 荤菜将通过JS动态生成 -->
+            </div>
+        </div>
+        
+        <div class="dish-column vegetable">
+            <h2><i class="fas fa-seedling"></i> 素菜区 (7种)</h2>
+            <div class="dish-list" id="vegetable-dishes">
+                <!-- 素菜将通过JS动态生成 -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="vote-summary">
+        <h3><i class="fas fa-trophy"></i> 当前排名第一的菜品</h3>
+        <div class="top-dishes">
+            <div class="top-dish">
+                <div class="dish-type">荤菜</div>
+                <div class="dish-name" id="top-meat-name">红烧肉</div>
+                <div class="vote-count"><i class="fas fa-fire"></i> <span id="top-meat-votes">0</span> 票</div>
+            </div>
+            <div class="top-dish">
+                <div class="dish-type">素菜</div>
+                <div class="dish-name" id="top-vegetable-name">炒青菜</div>
+                <div class="vote-count"><i class="fas fa-fire"></i> <span id="top-vegetable-votes">0</span> 票</div>
+            </div>
+        </div>
+        
+        <div class="user-votes">
+            <p><i class="fas fa-user-check"></i> 您已投票：<span id="user-voted-meat">暂无</span> (荤菜) | <span id="user-voted-vegetable">暂无</span> (素菜)</p>
+            <p style="font-size:0.85rem; margin-top:5px; color:#888;">提示：点击已投票的按钮可以取消投票</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>可可盖项目部食堂管理系统 &copy; 2023 | 每人限投一票，请谨慎选择</p>
+    </footer>
+
+    <script>
+        // 菜品数据
+        const meatDishes = [
+            { id: 1, name: "红烧肉", image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 24 },
+            { id: 2, name: "糖醋排骨", image: "https://images.unsplash.com/photo-1585238342024-78d90f3ffee7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 19 },
+            { id: 3, name: "鱼香肉丝", image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 32 },
+            { id: 4, name: "宫保鸡丁", image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 28 },
+            { id: 5, name: "梅菜扣肉", image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 15 },
+            { id: 6, name: "回锅肉", image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 22 },
+            { id: 7, name: "黑椒牛柳", image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 30 }
+        ];
+        
+        const vegetableDishes = [
+            { id: 8, name: "炒青菜", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 35 },
+            { id: 9, name: "麻婆豆腐", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 42 },
+            { id: 10, name: "酸辣土豆丝", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 38 },
+            { id: 11, name: "手撕包菜", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 26 },
+            { id: 12, name: "蒜蓉西兰花", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 31 },
+            { id: 13, name: "地三鲜", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 29 },
+            { id: 14, name: "番茄炒蛋", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80", votes: 45 }
+        ];
+        
+        // 用户投票状态（模拟本地存储）
+        let userVotes = {
+            meat: null,
+            vegetable: null
+        };
+        
+        // 从本地存储加载用户投票状态（如果存在）
+        function loadUserVotes() {
+            const savedVotes = localStorage.getItem('cocogaiVotes');
+            if (savedVotes) {
+                userVotes = JSON.parse(savedVotes);
+            }
+        }
+        
+        // 保存用户投票状态到本地存储
+        function saveUserVotes() {
+            localStorage.setItem('cocogaiVotes', JSON.stringify(userVotes));
+        }
+        
+        // 初始化页面
+        function initPage() {
+            loadUserVotes();
+            renderDishes();
+            updateTopDishes();
+            updateUserVotesDisplay();
+        }
+        
+        // 渲染菜品列表
+        function renderDishes() {
+            const meatContainer = document.getElementById('meat-dishes');
+            const vegetableContainer = document.getElementById('vegetable-dishes');
+            
+            // 清空容器
+            meatContainer.innerHTML = '';
+            vegetableContainer.innerHTML = '';
+            
+            // 渲染荤菜
+            meatDishes.forEach(dish => {
+                const dishElement = createDishElement(dish, 'meat');
+                meatContainer.appendChild(dishElement);
+            });
+            
+            // 渲染素菜
+            vegetableDishes.forEach(dish => {
+                const dishElement = createDishElement(dish, 'vegetable');
+                vegetableContainer.appendChild(dishElement);
+            });
+        }
+        
+        // 创建菜品元素
+        function createDishElement(dish, type) {
+            const dishElement = document.createElement('div');
+            dishElement.className = 'dish-item';
+            dishElement.dataset.id = dish.id;
+            
+            // 检查是否是当前第一名
+            const isTopDish = checkIfTopDish(dish, type);
+            
+            dishElement.innerHTML = `
+                ${isTopDish ? '<div class="current-top">当前第一</div>' : ''}
+                <img src="${dish.image}" alt="${dish.name}" class="dish-image">
+                <div class="dish-info">
+                    <div class="dish-name">${dish.name}</div>
+                    <button class="vote-btn ${userVotes[type] === dish.id ? 'voted' : ''}" data-id="${dish.id}" data-type="${type}">
+                        ${userVotes[type] === dish.id ? '取消投票' : '投票'}
+                    </button>
+                    <div class="vote-count">
+                        <i class="fas fa-fire"></i> ${dish.votes} 票
+                    </div>
+                </div>
+            `;
+            
+            return dishElement;
+        }
+        
+        // 检查菜品是否是当前类别中的第一名
+        function checkIfTopDish(dish, type) {
+            const dishes = type === 'meat' ? meatDishes : vegetableDishes;
+            // 找到最高票数
+            const maxVotes = Math.max(...dishes.map(d => d.votes));
+            // 检查是否有多个菜品并列第一
+            const topDishes = dishes.filter(d => d.votes === maxVotes);
+            // 如果当前菜品是并列第一之一，返回true
+            return topDishes.some(d => d.id === dish.id);
+        }
+        
+        // 更新顶部菜品显示
+        function updateTopDishes() {
+            // 找到荤菜最高票数
+            const topMeat = meatDishes.reduce((prev, current) => 
+                (prev.votes > current.votes) ? prev : current
+            );
+            
+            // 找到素菜最高票数
+            const topVegetable = vegetableDishes.reduce((prev, current) => 
+                (prev.votes > current.votes) ? prev : current
+            );
+            
+            document.getElementById('top-meat-name').textContent = topMeat.name;
+            document.getElementById('top-meat-votes').textContent = topMeat.votes;
+            document.getElementById('top-vegetable-name').textContent = topVegetable.name;
+            document.getElementById('top-vegetable-votes').textContent = topVegetable.votes;
+        }
+        
+        // 更新用户投票显示
+        function updateUserVotesDisplay() {
+            const meatVoteElement = document.getElementById('user-voted-meat');
+            const vegetableVoteElement = document.getElementById('user-voted-vegetable');
+            
+            if (userVotes.meat) {
+                const votedMeat = meatDishes.find(dish => dish.id === userVotes.meat);
+                meatVoteElement.textContent = votedMeat ? votedMeat.name : "无";
+            } else {
+                meatVoteElement.textContent = "暂无";
+            }
+            
+            if (userVotes.vegetable) {
+                const votedVegetable = vegetableDishes.find(dish => dish.id === userVotes.vegetable);
+                vegetableVoteElement.textContent = votedVegetable ? votedVegetable.name : "无";
+            } else {
+                vegetableVoteElement.textContent = "暂无";
+            }
+        }
+        
+        // 投票/取消投票函数
+        function voteForDish(dishId, type) {
+            const dishes = type === 'meat' ? meatDishes : vegetableDishes;
+            const dish = dishes.find(d => d.id === dishId);
+            
+            if (!dish) return;
+            
+            // 如果用户已经投了这个菜，则取消投票
+            if (userVotes[type] === dishId) {
+                dish.votes--;
+                userVotes[type] = null;
+            } 
+            // 如果用户已经投了同类型的其他菜，则先取消之前的投票
+            else if (userVotes[type] !== null) {
+                const previousDish = dishes.find(d => d.id === userVotes[type]);
+                if (previousDish) {
+                    previousDish.votes--;
+                }
+                dish.votes++;
+                userVotes[type] = dishId;
+            }
+            // 如果用户还没投过这个类型的菜，则直接投票
+            else {
+                dish.votes++;
+                userVotes[type] = dishId;
+            }
+            
+            // 保存投票状态
+            saveUserVotes();
+            
+            // 重新渲染页面
+            renderDishes();
+            updateTopDishes();
+            updateUserVotesDisplay();
+        }
+        
+        // 添加事件监听器
+        document.addEventListener('DOMContentLoaded', function() {
+            initPage();
+            
+            // 使用事件委托处理投票按钮点击
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('vote-btn')) {
+                    const dishId = parseInt(event.target.dataset.id);
+                    const type = event.target.dataset.type;
+                    voteForDish(dishId, type);
+                }
+            });
+            
+            // 模拟时间更新
+            function updateTimeReminder() {
+                const now = new Date();
+                const hours = now.getHours();
+                const minutes = now.getMinutes();
+                
+                // 检查是否接近清算时间
+                const timeReminder = document.querySelector('.time-reminder');
+                
+                // 如果接近清算时间（8点或16点前后30分钟），添加高亮提醒
+                const isCloseToClearTime = 
+                    (hours === 7 && minutes >= 30) || // 7:30-7:59
+                    (hours === 8 && minutes <= 30) || // 8:00-8:30
+                    (hours === 15 && minutes >= 30) || // 15:30-15:59
+                    (hours === 16 && minutes <= 30);   // 16:00-16:30
+                
+                if (isCloseToClearTime) {
+                    timeReminder.style.backgroundColor = '#ffebee';
+                    timeReminder.style.borderLeftColor = '#f44336';
+                    timeReminder.style.animation = 'pulse 2s infinite';
+                    
+                    // 添加CSS动画
+                    if (!document.querySelector('#pulse-animation')) {
+                        const style = document.createElement('style');
+                        style.id = 'pulse-animation';
+                        style.textContent = `
+                            @keyframes pulse {
+                                0% { box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08); }
+                                50% { box-shadow: 0 3px 15px rgba(244, 67, 54, 0.3); }
+                                100% { box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08); }
+                            }
+                        `;
+                        document.head.appendChild(style);
+                    }
+                }
+            }
+            
+            // 初始更新时间提醒
+            updateTimeReminder();
+            
+            // 每分钟更新时间提醒
+            setInterval(updateTimeReminder, 60000);
+        });
+    </script>
+</body>
+</html>

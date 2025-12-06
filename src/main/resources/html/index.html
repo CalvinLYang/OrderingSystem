@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>搬家中心生产项目部班中餐预约点餐系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a6dcc 0%, #0d4d9c 100%);
+            color: white;
+            padding: 20px 15px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            text-align: center;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e1e5eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            border-color: #1a6dcc;
+            outline: none;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #1a6dcc 0%, #0d4d9c 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(135deg, #0d4d9c 0%, #1a6dcc 100%);
+            box-shadow: 0 5px 15px rgba(13, 77, 156, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        }
+        
+        .contact-info {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+        }
+        
+        .contact-info a {
+            color: #1a6dcc;
+            text-decoration: none;
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid #e1e5eb;
+            border-radius: 10px;
+            font-size: 16px;
+            background-color: #f8f9fa;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23666" width="18px" height="18px"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: 95% center;
+            background-size: 18px;
+        }
+        
+        .project-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+        }
+        
+        .project-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid #e1e5eb;
+            transition: all 0.3s ease;
+        }
+        
+        .project-item:hover {
+            border-color: #1a6dcc;
+            background: #eef5ff;
+        }
+        
+        .project-item i {
+            font-size: 24px;
+            color: #1a6dcc;
+            margin-bottom: 10px;
+        }
+        
+        .project-item h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .vote-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .vote-container {
+                flex-direction: row;
+            }
+        }
+        
+        .vote-category {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .vote-category h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e1e5eb;
+            color: #0d4d9c;
+        }
+        
+        .dish-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .dish-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .dish-item:hover {
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dish-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .dish-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .dish-info {
+            flex: 1;
+        }
+        
+        .dish-info h4 {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        
+        .dish-info p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .vote-count {
+            font-weight: 600;
+            color: #1a6dcc;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        
+        .vote-btn {
+            background: #e1e5eb;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .vote-btn:hover {
+            background: #d1d5db;
+        }
+        
+        .vote-btn.voted {
+            background: #1a6dcc;
+            color: white;
+        }
+        
+        .vote-btn i {
+            font-size: 18px;
+        }
+        
+        .leading-dish {
+            background: #fff8e1;
+            border: 2px solid #ffc107;
+            margin-bottom: 25px;
+        }
+        
+        .leading-dish h3 {
+            color: #e65100;
+        }
+        
+        .notification {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+            font-size: 14px;
+        }
+        
+        .notification i {
+            color: #ffc107;
+            margin-right: 10px;
+        }
+        
+        .page-title {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #0d4d9c;
+        }
+        
+        .page-subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #1a6dcc;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-btn i {
+            margin-right: 5px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            margin: 15px auto;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e1e5eb;
+        }
+        
+        .qr-code span {
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div id="login-page" class="container">
+        <div class="header">
+            <h1>搬家中心生产项目部班中餐预约点餐系统</h1>
+            <p>员工登录</p>
+        </div>
+        
+        <div class="card">
+            <div class="form-group">
+                <label for="employee-id"><i class="fas fa-id-card"></i> 工号</label>
+                <input type="text" id="employee-id" placeholder="请输入您的工号">
+            </div>
+            
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> 密码</label>
+                <input type="password" id="password" placeholder="请输入您的密码">
+            </div>
+            
+            <button id="login-btn" class="btn">登录</button>
+        </div>
+        
+        <div class="contact-info">
+            <p><i class="fas fa-phone-alt"></i> 服务中心电话：<strong>400-123-4567</strong></p>
+            <p>或扫描下方二维码联系我们</p>
+            <div class="qr-code">
+                <span>二维码示例</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 项目选择页面 -->
+    <div id="project-page" class="container hidden">
+        <div class="header">
+            <h1>搬家中心生产项目部班中餐预约点餐系统</h1>
+            <p>请选择您所在的项目部</p>
+        </div>
+        
+        <a href="#" class="back-btn" id="back-to-login"><i class="fas fa-arrow-left"></i> 返回登录</a>
+        
+        <div class="search-box">
+            <input type="text" id="project-search" placeholder="搜索项目部...">
+        </div>
+        
+        <div class="card">
+            <div class="project-list" id="project-list">
+                <!-- 项目列表将通过JS动态生成 -->
+            </div>
+        </div>
+        
+        <div class="card">
+            <a href="#" class="btn btn-secondary" id="change-password-btn"><i class="fas fa-key"></i> 修改密码</a>
+        </div>
+    </div>
+    
+    <!-- 投票页面 -->
+    <div id="vote-page" class="container hidden">
+        <div class="header">
+            <h1 id="vote-page-title">可可盖项目部今日餐品排名</h1>
+            <p>请为您喜欢的菜品投票</p>
+        </div>
+        
+        <a href="#" class="back-btn" id="back-to-project"><i class="fas fa-arrow-left"></i> 返回项目选择</a>
+        
+        <div class="notification">
+            <p><i class="fas fa-exclamation-circle"></i> <strong>重要提醒：</strong>系统将在上午8点和下午4点进行清算，厨房将按照排名第一的荤菜和素菜出餐，请及时投票！</p>
+        </div>
+        
+        <div class="card">
+            <h2 class="page-title">当前领先菜品</h2>
+            <div class="vote-container">
+                <div class="vote-category leading-dish">
+                    <h3><i class="fas fa-crown"></i> 荤菜排名第一</h3>
+                    <div class="dish-item">
+                        <div class="dish-image">
+                            <img src="" alt="荤菜" id="leading-meat-image">
+                        </div>
+                        <div class="dish-info">
+                            <h4 id="leading-meat-name">红烧肉</h4>
+                            <p>当前票数: <span id="leading-meat-votes">0</span> 票</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="vote-category leading-dish">
+                    <h3><i class="fas fa-crown"></i> 素菜排名第一</h3>
+                    <div class="dish-item">
+                        <div class="dish-image">
+                            <img src="" alt="素菜" id="leading-veg-image">
+                        </div>
+                        <div class="dish-info">
+                            <h4 id="leading-veg-name">炒青菜</h4>
+                            <p>当前票数: <span id="leading-veg-votes">0</span> 票</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="vote-container">
+                <div class="vote-category">
+                    <h3><i class="fas fa-drumstick-bite"></i> 荤菜组 (7选1)</h3>
+                    <div class="dish-list" id="meat-dishes">
+                        <!-- 荤菜列表将通过JS动态生成 -->
+                    </div>
+                </div>
+                
+                <div class="vote-category">
+                    <h3><i class="fas fa-leaf"></i> 素菜组 (7选1)</h3>
+                    <div class="dish-list" id="veg-dishes">
+                        <!-- 素菜列表将通过JS动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="notification">
+            <p><i class="fas fa-info-circle"></i> 投票规则：每位员工每组菜品只能投一票，点击投票按钮可投票，再次点击可取消投票。</p>
+        </div>
+    </div>
+    
+    <!-- 修改密码页面 -->
+    <div id="password-page" class="container hidden">
+        <div class="header">
+            <h1>修改密码</h1>
+            <p>请设置新密码</p>
+        </div>
+        
+        <a href="#" class="back-btn" id="back-to-project-from-password"><i class="fas fa-arrow-left"></i> 返回项目选择</a>
+        
+        <div class="card">
+            <div class="form-group">
+                <label for="account"><i class="fas fa-user"></i> 账号</label>
+                <input type="text" id="account" placeholder="请输入您的工号">
+            </div>
+            
+            <div class="form-group">
+                <label for="old-password"><i class="fas fa-lock"></i> 原密码</label>
+                <input type="password" id="old-password" placeholder="请输入原密码">
+            </div>
+            
+            <div class="form-group">
+                <label for="new-password"><i class="fas fa-key"></i> 新密码</label>
+                <input type="password" id="new-password" placeholder="请输入新密码">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm-password"><i class="fas fa-key"></i> 确认新密码</label>
+                <input type="password" id="confirm-password" placeholder="请再次输入新密码">
+            </div>
+            
+            <button id="submit-password-btn" class="btn">确认修改</button>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据 - 项目组
+        const projectsData = [
+            { id: 1, name: "红柳林项目部", icon: "fas fa-tree" },
+            { id: 2, name: "张家峁项目部", icon: "fas fa-mountain" },
+            { id: 3, name: "柠条塔项目部", icon: "fas fa-tower-observation" },
+            { id: 4, name: "小保当项目部", icon: "fas fa-building" },
+            { id: 5, name: "曹家滩项目部", icon: "fas fa-water" },
+            { id: 6, name: "安山项目部", icon: "fas fa-hill-rockslide" },
+            { id: 7, name: "沙梁项目部", icon: "fas fa-hill-rockslide" },
+            { id: 8, name: "银河项目部", icon: "fas fa-star" },
+            { id: 9, name: "杭来湾项目部", icon: "fas fa-warehouse" },
+            { id: 10, name: "可可盖项目部", icon: "fas fa-hard-hat" }
+        ];
+        
+        // 模拟数据 - 菜品
+        const dishesData = {
+            meatDishes: [
+                { id: 1, name: "红烧肉", votes: 42, image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" },
+                { id: 2, name: "糖醋排骨", votes: 38, image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" },
+                { id: 3, name: "鱼香肉丝", votes: 35, image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" },
+                { id: 4, name: "宫保鸡丁", votes: 29, image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" },
+                { id: 5, name: "梅菜扣肉", votes: 27, image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" },
+                { id: 6, name: "回锅肉", votes: 25, image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" },
+                { id: 7, name: "土豆炖牛肉", votes: 22, image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" }
+            ],
+            vegDishes: [
+                { id: 8, name: "炒青菜", votes: 40, image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" },
+                { id: 9, name: "麻婆豆腐", votes: 36, image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" },
+                { id: 10, name: "地三鲜", votes: 32, image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" },
+                { id: 11, name: "酸辣土豆丝", votes: 30, image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" },
+                { id: 12, name: "西红柿炒鸡蛋", votes: 28, image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" },
+                { id: 13, name: "手撕包菜", votes: 26, image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" },
+                { id: 14, name: "凉拌黄瓜", votes: 24, image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" }
+            ]
+        };
+        
+        // 用户投票状态
+        let userVotes = {
+            meatVote: null,
+            vegVote: null
+        };
+        
+        // 页面元素
+        const loginPage = document.getElementById('login-page');
+        const projectPage = document.getElementById('project-page');
+        const votePage = document.getElementById('vote-page');
+        const passwordPage = document.getElementById('password-page');
+        
+        const employeeIdInput = document.getElementById('employee-id');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('login-btn');
+        
+        const projectList = document.getElementById('project-list');
+        const projectSearch = document.getElementById('project-search');
+        const changePasswordBtn = document.getElementById('change-password-btn');
+        
+        const meatDishesList = document.getElementById('meat-dishes');
+        const vegDishesList = document.getElementById('veg-dishes');
+        const votePageTitle = document.getElementById('vote-page-title');
+        
+        const leadingMeatName = document.getElementById('leading-meat-name');
+        const leadingMeatVotes = document.getElementById('leading-meat-votes');
+        const leadingMeatImage = document.getElementById('leading-meat-image');
+        const leadingVegName = document.getElementById('leading-veg-name');
+        const leadingVegVotes = document.getElementById('leading-veg-votes');
+        const leadingVegImage = document.getElementById('leading-veg-image');
+        
+        const backToLogin = document.getElementById('back-to-login');
+        const backToProject = document.getElementById('back-to-project');
+        const backToProjectFromPassword = document.getElementById('back-to-project-from-password');
+        
+        const submitPasswordBtn = document.getElementById('submit-password-btn');
+        
+        // 当前选中的项目
+        let currentProject = "";
+        
+        // 初始化项目列表
+        function renderProjects(projects) {
+            projectList.innerHTML = '';
+            
+            projects.forEach(project => {
+                const projectItem = document.createElement('div');
+                projectItem.className = 'project-item';
+                projectItem.innerHTML = `
+                    <i class="${project.icon}"></i>
+                    <h3>${project.name}</h3>
+                `;
+                
+                projectItem.addEventListener('click', () => {
+                    currentProject = project.name;
+                    votePageTitle.textContent = `${project.name}今日餐品排名`;
+                    showPage('vote-page');
+                    updateLeadingDishes();
+                    renderDishes();
+                });
+                
+                projectList.appendChild(projectItem);
+            });
+        }
+        
+        // 初始化菜品列表
+        function renderDishes() {
+            meatDishesList.innerHTML = '';
+            vegDishesList.innerHTML = '';
+            
+            // 渲染荤菜
+            dishesData.meatDishes.forEach(dish => {
+                const dishItem = document.createElement('div');
+                dishItem.className = 'dish-item';
+                dishItem.innerHTML = `
+                    <div class="dish-image">
+                        <img src="${dish.image}" alt="${dish.name}">
+                    </div>
+                    <div class="dish-info">
+                        <h4>${dish.name}</h4>
+                        <p>当前票数: <span class="vote-count">${dish.votes}</span> 票</p>
+                    </div>
+                    <button class="vote-btn ${userVotes.meatVote === dish.id ? 'voted' : ''}" data-id="${dish.id}" data-type="meat">
+                        <i class="fas fa-thumbs-up"></i>
+                    </button>
+                `;
+                
+                meatDishesList.appendChild(dishItem);
+            });
+            
+            // 渲染素菜
+            dishesData.vegDishes.forEach(dish => {
+                const dishItem = document.createElement('div');
+                dishItem.className = 'dish-item';
+                dishItem.innerHTML = `
+                    <div class="dish-image">
+                        <img src="${dish.image}" alt="${dish.name}">
+                    </div>
+                    <div class="dish-info">
+                        <h4>${dish.name}</h4>
+                        <p>当前票数: <span class="vote-count">${dish.votes}</span> 票</p>
+                    </div>
+                    <button class="vote-btn ${userVotes.vegVote === dish.id ? 'voted' : ''}" data-id="${dish.id}" data-type="veg">
+                        <i class="fas fa-thumbs-up"></i>
+                    </button>
+                `;
+                
+                vegDishesList.appendChild(dishItem);
+            });
+            
+            // 添加投票事件监听
+            document.querySelectorAll('.vote-btn').forEach(btn => {
+                btn.addEventListener('click', handleVote);
+            });
+        }
+        
+        // 处理投票
+        function handleVote(e) {
+            const btn = e.currentTarget;
+            const dishId = parseInt(btn.getAttribute('data-id'));
+            const dishType = btn.getAttribute('data-type');
+            
+            // 检查是否已经投票
+            if (dishType === 'meat') {
+                if (userVotes.meatVote === dishId) {
+                    // 取消投票
+                    userVotes.meatVote = null;
+                    btn.classList.remove('voted');
+                    decreaseVote(dishId);
+                } else {
+                    // 取消之前的投票（如果有）
+                    if (userVotes.meatVote) {
+                        const prevBtn = document.querySelector(`.vote-btn[data-id="${userVotes.meatVote}"][data-type="meat"]`);
+                        if (prevBtn) {
+                            prevBtn.classList.remove('voted');
+                            decreaseVote(userVotes.meatVote);
+                        }
+                    }
+                    
+                    // 投新票
+                    userVotes.meatVote = dishId;
+                    btn.classList.add('voted');
+                    increaseVote(dishId);
+                }
+            } else if (dishType === 'veg') {
+                if (userVotes.vegVote === dishId) {
+                    // 取消投票
+                    userVotes.vegVote = null;
+                    btn.classList.remove('voted');
+                    decreaseVote(dishId);
+                } else {
+                    // 取消之前的投票（如果有）
+                    if (userVotes.vegVote) {
+                        const prevBtn = document.querySelector(`.vote-btn[data-id="${userVotes.vegVote}"][data-type="veg"]`);
+                        if (prevBtn) {
+                            prevBtn.classList.remove('voted');
+                            decreaseVote(userVotes.vegVote);
+                        }
+                    }
+                    
+                    // 投新票
+                    userVotes.vegVote = dishId;
+                    btn.classList.add('voted');
+                    increaseVote(dishId);
+                }
+            }
+            
+            // 更新领先菜品
+            updateLeadingDishes();
+        }
+        
+        // 增加票数
+        function increaseVote(dishId) {
+            // 在荤菜中查找
+            let dish = dishesData.meatDishes.find(d => d.id === dishId);
+            if (dish) {
+                dish.votes++;
+                // 更新显示
+                const voteCountElement = document.querySelector(`.vote-btn[data-id="${dishId}"]`).parentElement.querySelector('.vote-count');
+                if (voteCountElement) {
+                    voteCountElement.textContent = dish.votes;
+                }
+                return;
+            }
+            
+            // 在素菜中查找
+            dish = dishesData.vegDishes.find(d => d.id === dishId);
+            if (dish) {
+                dish.votes++;
+                // 更新显示
+                const voteCountElement = document.querySelector(`.vote-btn[data-id="${dishId}"]`).parentElement.querySelector('.vote-count');
+                if (voteCountElement) {
+                    voteCountElement.textContent = dish.votes;
+                }
+            }
+        }
+        
+        // 减少票数
+        function decreaseVote(dishId) {
+            // 在荤菜中查找
+            let dish = dishesData.meatDishes.find(d => d.id === dishId);
+            if (dish) {
+                dish.votes--;
+                // 更新显示
+                const voteCountElement = document.querySelector(`.vote-btn[data-id="${dishId}"]`).parentElement.querySelector('.vote-count');
+                if (voteCountElement) {
+                    voteCountElement.textContent = dish.votes;
+                }
+                return;
+            }
+            
+            // 在素菜中查找
+            dish = dishesData.vegDishes.find(d => d.id === dishId);
+            if (dish) {
+                dish.votes--;
+                // 更新显示
+                const voteCountElement = document.querySelector(`.vote-btn[data-id="${dishId}"]`).parentElement.querySelector('.vote-count');
+                if (voteCountElement) {
+                    voteCountElement.textContent = dish.votes;
+                }
+            }
+        }
+        
+        // 更新领先菜品
+        function updateLeadingDishes() {
+            // 找出荤菜中票数最多的
+            let maxMeatVotes = 0;
+            let leadingMeat = null;
+            
+            dishesData.meatDishes.forEach(dish => {
+                if (dish.votes > maxMeatVotes) {
+                    maxMeatVotes = dish.votes;
+                    leadingMeat = dish;
+                }
+            });
+            
+            // 找出素菜中票数最多的
+            let maxVegVotes = 0;
+            let leadingVeg = null;
+            
+            dishesData.vegDishes.forEach(dish => {
+                if (dish.votes > maxVegVotes) {
+                    maxVegVotes = dish.votes;
+                    leadingVeg = dish;
+                }
+            });
+            
+            // 更新显示
+            if (leadingMeat) {
+                leadingMeatName.textContent = leadingMeat.name;
+                leadingMeatVotes.textContent = leadingMeat.votes;
+                leadingMeatImage.src = leadingMeat.image;
+                leadingMeatImage.alt = leadingMeat.name;
+            }
+            
+            if (leadingVeg) {
+                leadingVegName.textContent = leadingVeg.name;
+                leadingVegVotes.textContent = leadingVeg.votes;
+                leadingVegImage.src = leadingVeg.image;
+                leadingVegImage.alt = leadingVeg.name;
+            }
+        }
+        
+        // 显示指定页面
+        function showPage(pageId) {
+            // 隐藏所有页面
+            loginPage.classList.add('hidden');
+            projectPage.classList.add('hidden');
+            votePage.classList.add('hidden');
+            passwordPage.classList.add('hidden');
+            
+            // 显示指定页面
+            document.getElementById(pageId).classList.remove('hidden');
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 渲染项目列表
+            renderProjects(projectsData);
+            
+            // 登录按钮事件
+            loginBtn.addEventListener('click', function() {
+                const employeeId = employeeIdInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                if (!employeeId || !password) {
+                    alert('请输入工号和密码');
+                    return;
+                }
+                
+                // 模拟登录成功
+                showPage('project-page');
+            });
+            
+            // 项目搜索功能
+            projectSearch.addEventListener('input', function() {
+                const searchTerm = this.value.trim().toLowerCase();
+                
+                if (searchTerm === '') {
+                    renderProjects(projectsData);
+                    return;
+                }
+                
+                const filteredProjects = projectsData.filter(project => 
+                    project.name.toLowerCase().includes(searchTerm)
+                );
+                
+                renderProjects(filteredProjects);
+            });
+            
+            // 修改密码按钮事件
+            changePasswordBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showPage('password-page');
+            });
+            
+            // 提交密码修改
+            submitPasswordBtn.addEventListener('click', function() {
+                const account = document.getElementById('account').value.trim();
+                const oldPassword = document.getElementById('old-password').value.trim();
+                const newPassword = document.getElementById('new-password').value.trim();
+                const confirmPassword = document.getElementById('confirm-password').value.trim();
+                
+                if (!account || !oldPassword || !newPassword || !confirmPassword) {
+                    alert('请填写所有字段');
+                    return;
+                }
+                
+                if (newPassword !== confirmPassword) {
+                    alert('新密码与确认密码不一致');
+                    return;
+                }
+                
+                if (newPassword.length < 6) {
+                    alert('新密码长度不能少于6位');
+                    return;
+                }
+                
+                alert('密码修改成功！');
+                showPage('project-page');
+                
+                // 清空表单
+                document.getElementById('account').value = '';
+                document.getElementById('old-password').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-password').value = '';
+            });
+            
+            // 返回按钮事件
+            backToLogin.addEventListener('click', function(e) {
+                e.preventDefault();
+                showPage('login-page');
+            });
+            
+            backToProject.addEventListener('click', function(e) {
+                e.preventDefault();
+                showPage('project-page');
+            });
+            
+            backToProjectFromPassword.addEventListener('click', function(e) {
+                e.preventDefault();
+                showPage('project-page');
+            });
+            
+            // 初始显示登录页面
+            showPage('login-page');
+            
+            // 初始更新领先菜品
+            updateLeadingDishes();
+        });
+        
+        // 模拟后端API调用
+        function fetchProjectsFromAPI() {
+            // 这里可以替换为实际的后端API调用
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve(projectsData);
+                }, 500);
+            });
+        }
+        
+        function fetchDishesFromAPI() {
+            // 这里可以替换为实际的后端API调用
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve(dishesData);
+                }, 500);
+            });
+        }
+    </script>
+</body>
+</html>
